@@ -40,11 +40,16 @@ impl Dot {
 
 
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq, Debug)]
 pub struct VersionVector(HashMap<String, u64>);
 
 
 impl VersionVector {
+
+
+    pub fn new() -> Self {
+	VersionVector(HashMap::new())
+    }
 
     pub fn get(&self, id: &str) -> u64 {
 	match self.0.get(&id.to_string()) {
@@ -59,6 +64,15 @@ impl VersionVector {
 	Dot::new(id.to_string(), v)
     }
 
+
+    pub fn incr(&mut self, id: &str) -> u64 {
+	let v = self.0.entry(id.to_string())
+	    .and_modify(|x| *x += 1)
+	    .or_insert(1);
+
+	*v
+	    
+    }
 
     pub fn descends(&self, other: &VersionVector) -> bool {
 	for (k, v) in other.0.iter() {
@@ -80,7 +94,7 @@ impl VersionVector {
 
 
     pub fn concurrent(&self, other: &VersionVector) -> bool {
-	self.descends(other) || other.descends(&self)
+	!(self.descends(other) || other.descends(&self) )
     }
 
 
