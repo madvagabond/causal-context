@@ -72,6 +72,19 @@ impl VersionVector {
 
 
 
+    pub fn descends_dot(&self, dot: &Dot) -> bool {
+	let v = self.get(dot.id());
+	v >= dot.version()
+    }
+
+
+
+    pub fn concurrent(&self, other: &VersionVector) -> bool {
+	self.descends(other) || other.descends(&self)
+    }
+
+
+    
 
     pub fn merge(&mut self, other: &VersionVector) {
 
@@ -88,7 +101,7 @@ impl VersionVector {
 
 
     /** Finds events in A not present in B */
-    pub fn dominating(&self, other: &Self) -> VersionVector {
+    pub fn delta(&self, other: &Self) -> VersionVector {
 	
 	let state = self.0.iter()
 	    .filter(|(k, v)| **v > other.get(k) )
